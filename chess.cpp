@@ -1,39 +1,43 @@
 #include "chess.h"
 
-// Constructor: calls initBoard to set up all pieces
+// Initialize wasCaptured and set up the board
 ChessBoard::ChessBoard() {
     wasCaptured = false;
     initBoard();
 }
 
-// Places all pieces in their starting positions
+// Place all pieces in standard chess starting positions
 void ChessBoard::initBoard() {
     char backRow[8] = {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
 
     for (int col = 0; col < 8; col++) {
+        // Black back row uses lowercase symbols
         board[0][col] = {(char)tolower(backRow[col]), false, false};
         board[1][col] = {'p', false, false};
 
+        // Middle rows start empty
         for (int row = 2; row <= 5; row++) {
             board[row][col] = {' ', false, true};
         }
 
+        // White pieces on rows 6 and 7
         board[6][col] = {'P', true, false};
         board[7][col] = {backRow[col], true, false};
     }
 }
 
-// Displays the current board state in the terminal
+// Print the board with column letters and row numbers
 void ChessBoard::display() const {
     std::cout << "\n    a  b  c  d  e  f  g  h\n";
     std::cout << "   ------------------------\n";
 
     for (int row = 0; row < 8; row++) {
+        // 8 - row flips the index so row 0 displays as 8
         std::cout << (8 - row) << " | ";
 
         for (int col = 0; col < 8; col++) {
             if (board[row][col].isEmpty) {
-                std::cout << ".  ";
+                std::cout << ".  ";        // Dot marks an empty square
             } else {
                 std::cout << board[row][col].symbol << "  ";
             }
@@ -45,26 +49,26 @@ void ChessBoard::display() const {
     std::cout << "    a  b  c  d  e  f  g  h\n\n";
 }
 
-// Checks if a move is valid for the current player
+// Basic move validation applied to all pieces
 bool ChessBoard::isValidMove(int fromRow, int fromCol, int toRow, int toCol, bool whiteTurn) const {
     Piece from = board[fromRow][fromCol];
     Piece to = board[toRow][toCol];
 
-    if (from.isEmpty) return false;
-    if (from.isWhite != whiteTurn) return false;
-    if (!to.isEmpty && to.isWhite == whiteTurn) return false;
+    if (from.isEmpty) return false;                          // Can't move an empty square
+    if (from.isWhite != whiteTurn) return false;             // Can't move opponent's piece
+    if (!to.isEmpty && to.isWhite == whiteTurn) return false;// Can't capture your own piece
 
     return true;
 }
 
-// Executes a move on the board after validating it
+// Validate and execute a move, check for king capture
 bool ChessBoard::movePiece(int fromRow, int fromCol, int toRow, int toCol, bool whiteTurn) {
     if (!isValidMove(fromRow, fromCol, toRow, toCol, whiteTurn)) {
         std::cout << "Invalid move! Try again.\n";
         return false;
     }
 
-    // Check if a king is being captured
+    // Check for king capture before overwriting the square
     if (board[toRow][toCol].symbol == 'k' || board[toRow][toCol].symbol == 'K') {
         std::cout << "\n*** King captured! ";
         if (whiteTurn) {
@@ -75,14 +79,14 @@ bool ChessBoard::movePiece(int fromRow, int fromCol, int toRow, int toCol, bool 
         wasCaptured = true;
     }
 
-    // Move the piece and clear the old square
+    // Move piece to new square and clear the old one
     board[toRow][toCol] = board[fromRow][fromCol];
     board[fromRow][fromCol] = {' ', false, true};
 
     return true;
 }
 
-// Returns true if a king was captured
+// Simple getter for the king capture flag
 bool ChessBoard::kingCaptured() const {
     return wasCaptured;
 }
