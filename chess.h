@@ -5,25 +5,25 @@
 #include <vector>
 #include <string>
 
-// Represents a single chess piece
+// Holds data for a single chess piece
 struct Piece {
-    char symbol;   // 'K', 'Q', 'R', 'B', 'N', 'P' (uppercase = White, lowercase = Black)
+    char symbol;   // Uppercase = White, lowercase = Black (K, Q, R, B, N, P)
     bool isWhite;
-    bool isEmpty;  // true if the square has no piece
+    bool isEmpty;  // True if no piece is on this square
 };
 
-// Manages the board state and game logic
+// Handles board setup, display, and move logic
 class ChessBoard {
 public:
     ChessBoard();
-    void display() const;
+    void display() const;         // Prints the current board to the terminal
     bool movePiece(int fromRow, int fromCol, int toRow, int toCol, bool whiteTurn);
-    bool kingCaptured() const;   // Returns true if a king was just captured
+    bool kingCaptured() const;    // Returns true if a king was taken
 
 private:
-    Piece board[8][8];
-    bool wasCaptured;            // Tracks if a king was captured
-    void initBoard();
+    Piece board[8][8];            // 8x8 grid storing all piece data
+    bool wasCaptured;             // Flips to true when a king is captured
+    void initBoard();             // Sets up starting positions
     bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, bool whiteTurn) const;
 };
 
